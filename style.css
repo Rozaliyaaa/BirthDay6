@@ -1,0 +1,311 @@
+/* ============================================================
+   Birthday Love Letter — style.css
+   ============================================================ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Background ────────────────────────────────────────────── */
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 30% 20%, #1a0530 0%, #0d0020 50%, #030010 100%);
+  font-family: 'Poppins', sans-serif;
+}
+
+/* ── Stars (injected by JS) ────────────────────────────────── */
+.star {
+  position: fixed;
+  background: #ffffff;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: twink var(--d, 2s) ease-in-out infinite alternate;
+  z-index: 0;
+}
+@keyframes twink {
+  0%   { opacity: 0; }
+  100% { opacity: 0.9; }
+}
+
+/* ── Petals (injected by JS) ───────────────────────────────── */
+.petal {
+  position: fixed;
+  pointer-events: none;
+  border-radius: 60% 0 60% 0;
+  animation: pfall var(--d, 9s) linear infinite;
+  opacity: 0;
+  z-index: 1;
+}
+@keyframes pfall {
+  0%   { opacity: 0.7; transform: translateY(-30px) rotate(0deg); }
+  100% { opacity: 0;   transform: translateY(110vh)  rotate(540deg); }
+}
+
+/* ── Main scene ────────────────────────────────────────────── */
+.scene {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.4rem;
+  position: relative;
+  z-index: 2;
+}
+
+/* ── Heading ───────────────────────────────────────────────── */
+.heading {
+  text-align: center;
+}
+.heading h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.6rem;
+  font-weight: 600;
+  font-style: italic;
+  color: #f5d5e8;
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+  text-shadow: 0 0 40px rgba(220, 100, 160, 0.5);
+}
+.heading p {
+  font-size: 0.78rem;
+  font-weight: 300;
+  color: rgba(245, 213, 232, 0.45);
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  margin-top: 0.5rem;
+}
+
+/* ── Envelope ──────────────────────────────────────────────── */
+.envelope-scene {
+  position: relative;
+  cursor: pointer;
+  width: 280px;
+  filter: drop-shadow(0 8px 32px rgba(180, 60, 120, 0.35));
+  transition: transform 0.3s;
+  user-select: none;
+}
+.envelope-scene:hover {
+  transform: translateY(-4px) scale(1.015);
+}
+.envelope-scene:hover .hint {
+  opacity: 1;
+}
+
+.hint {
+  position: absolute;
+  bottom: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.72rem;
+  font-weight: 300;
+  color: rgba(245, 213, 232, 0.5);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+svg.env {
+  overflow: visible;
+  display: block;
+  width: 100%;
+}
+
+/* SVG flap transition (set via JS after load) */
+#flapPoly {
+  transform-origin: 140px 50px;
+  transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Celebrate button ──────────────────────────────────────── */
+.celebrate-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: transparent;
+  border: 1px solid rgba(245, 213, 232, 0.3);
+  color: rgba(245, 213, 232, 0.7);
+  border-radius: 50px;
+  padding: 0.6rem 1.6rem;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 300;
+  font-size: 0.82rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.celebrate-btn:hover {
+  background: rgba(245, 213, 232, 0.08);
+  color: #f5d5e8;
+  border-color: rgba(245, 213, 232, 0.55);
+}
+
+/* ── Letter modal ──────────────────────────────────────────── */
+.letter-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(3, 0, 16, 0.7);
+  z-index: 50;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.letter-modal.show {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.letter-wrap {
+  position: relative;
+  width: min(88vw, 380px);
+  animation: riseIn 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes riseIn {
+  from { transform: translateY(60px) scale(0.88); opacity: 0; }
+  to   { transform: none; opacity: 1; }
+}
+
+.letter-card {
+  background: linear-gradient(170deg, #fff9f5, #fff4f0);
+  border-radius: 3px;
+  padding: 2.2rem 2rem 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ruled lines effect */
+.letter-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 27px,
+    rgba(200, 140, 160, 0.12) 28px
+  );
+  pointer-events: none;
+}
+
+.letter-date {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 0.85rem;
+  color: #b06080;
+  text-align: right;
+  margin-bottom: 1.2rem;
+}
+.letter-to {
+  font-family: 'Dancing Script', cursive;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #8b1a4a;
+  margin-bottom: 1rem;
+}
+.letter-body {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.05rem;
+  color: #3d1020;
+  line-height: 1.85;
+  margin-bottom: 1.4rem;
+}
+.letter-body em {
+  color: #9b1a4e;
+  font-style: italic;
+}
+.letter-sign {
+  font-family: 'Dancing Script', cursive;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #8b1a4a;
+  text-align: right;
+}
+
+/* floating hearts inside letter */
+.hf {
+  position: absolute;
+  font-size: 1rem;
+  color: #e080a8;
+  animation: hup 3s ease-in infinite;
+  pointer-events: none;
+}
+@keyframes hup {
+  0%   { opacity: 0.9; transform: translateY(0)     scale(1);   }
+  100% { opacity: 0;   transform: translateY(-90px) scale(0.3); }
+}
+
+/* close button */
+.close-x {
+  position: absolute;
+  top: -14px;
+  right: -14px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #8b1a4a;
+  border: 2px solid rgba(245, 213, 232, 0.3);
+  color: #ffdae8;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s, background 0.15s;
+  z-index: 10;
+}
+.close-x:hover {
+  transform: scale(1.12);
+  background: #b02060;
+}
+
+/* ── Particles (injected by JS) ────────────────────────────── */
+.cf {
+  position: fixed;
+  pointer-events: none;
+  z-index: 999;
+  border-radius: 2px;
+  animation: cfall var(--d) ease-in forwards;
+}
+@keyframes cfall {
+  0%   { opacity: 1; transform: translateY(-20px) rotate(0deg); }
+  100% { opacity: 0; transform: translateY(110vh)  rotate(720deg); }
+}
+
+.fw { position: fixed; pointer-events: none; z-index: 998; }
+.sp {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  animation: sfly var(--d) ease-out forwards;
+}
+@keyframes sfly {
+  0%   { opacity: 1; transform: translate(0, 0); }
+  100% { opacity: 0; transform: translate(var(--tx), var(--ty)); }
+}
+
+.bh {
+  position: fixed;
+  pointer-events: none;
+  z-index: 997;
+  animation: bfly var(--d, 3s) ease-out forwards;
+}
+@keyframes bfly {
+  0%   { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-160px) scale(0.3); }
+}
